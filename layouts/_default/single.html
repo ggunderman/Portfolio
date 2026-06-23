@@ -64,59 +64,60 @@
         </div>
     {{- end }}
     <article id="main-article" class="pagewidth {{ if or (not $isPost) $sf }}sf{{ else }}rm{{ end }}"
-        role="document" aria-labelledby="title"
-        {{- if ne (lower .Params.type) (or "post" "articles") }}
-            data-pagefind-ignore="all"
-        {{- else }}
-            data-pagefind-body
-        {{- end }}>
-        <header aria-labelledby="title">
-            {{ partial "page/title.html" . }}
-            {{- if $isPost }}
-            <div id="doc-author" class="textsw">
-                {{- $author := cond .Params.author .Params.author site.Params.Author.name }}
-                {{- $authors := or (.GetTerms "authors") (.GetTerms "author") }}
-                {{- $notMultiAuthor := eq (len $authors) 1 }}
-                {{- if $authors }}
-                    {{- if $notMultiAuthor }}
-                        {{- range $authors }}
-                            {{ $flair := .Params.flair }}
-                                {{- $displayPicture := partial "page/cover.html" (dict "page" .) }}
-                                <a class="author" href="{{ .Permalink }}" aria-label="{{ .LinkTitle }}">
-                                    {{- if $flair }}
-                                        <img id="avatar" class="sri" src="{{ $displayPicture }}" alt="{{ .LinkTitle }}"/>
-                                        <span class="has-desc" aria-label="{{ .LinkTitle }}" aria-description="{{ $flair }}">{{- .LinkTitle -}}</span>
-                                    {{- else }}
-                                    {{- .LinkTitle -}}
-                                    {{- end }}
-                                </a>
-                        {{- end }}
-                    {{- else }}
-                        {{ partial "terms.html" (dict "taxonomy" "author" "class" "delimiter" "page" .) }}
-                    {{- end }}
-                {{- else if $author -}}
-                    <span>{{ $author }}</span>
-                {{- end }}
-            </div>
-            {{ partial "page/timestamp.html" . }}
-            {{- end }}
-        </header>
-        {{- with .Params.toc }}
-            <br />
-            {{ partial "nav.html" (dict "navID" "TableOfContents" "page" $) }}
-        {{- end }}
-        {{ partial "page/audio.html" . }}
-        <section id="content" class="content {{ if or site.Params.posts.secnum .Params.secnum }}secnum{{ end }}" aria-labelledby="title" data-bionRead-safe>
-            {{- if or .Params.task site.Params.Post.enableCheckbox }}
-                {{ replace .Content "disabled=" "" | safeHTML }}
-            {{- else }}
-                {{ .Content }}
-            {{- end }}
-        </section>
+    role="document" aria-labelledby="title"
+    data-cms-bind="page"
+    {{- if ne (lower .Params.type) (or "post" "articles") }}
+        data-pagefind-ignore="all"
+    {{- else }}
+        data-pagefind-body
+    {{- end }}>
+    <header aria-labelledby="title">
+        {{ partial "page/title.html" . }}
         {{- if $isPost }}
-            {{ partial "post/tagged.html" . }}
+        <div id="doc-author" class="textsw">
+            {{- $author := cond .Params.author .Params.author site.Params.Author.name }}
+            {{- $authors := or (.GetTerms "authors") (.GetTerms "author") }}
+            {{- $notMultiAuthor := eq (len $authors) 1 }}
+            {{- if $authors }}
+                {{- if $notMultiAuthor }}
+                    {{- range $authors }}
+                        {{ $flair := .Params.flair }}
+                            {{- $displayPicture := partial "page/cover.html" (dict "page" .) }}
+                            <a class="author" href="{{ .Permalink }}" aria-label="{{ .LinkTitle }}">
+                                {{- if $flair }}
+                                    <img id="avatar" class="sri" src="{{ $displayPicture }}" alt="{{ .LinkTitle }}"/>
+                                    <span class="has-desc" aria-label="{{ .LinkTitle }}" aria-description="{{ $flair }}">{{- .LinkTitle -}}</span>
+                                {{- else }}
+                                {{- .LinkTitle -}}
+                                {{- end }}
+                            </a>
+                    {{- end }}
+                {{- else }}
+                    {{ partial "terms.html" (dict "taxonomy" "author" "class" "delimiter" "page" .) }}
+                {{- end }}
+            {{- else if $author -}}
+                <span>{{ $author }}</span>
+            {{- end }}
+        </div>
+        {{ partial "page/timestamp.html" . }}
         {{- end }}
-    </article>
+    </header>
+    {{- with .Params.toc }}
+        <br />
+        {{ partial "nav.html" (dict "navID" "TableOfContents" "page" $) }}
+    {{- end }}
+    {{ partial "page/audio.html" . }}
+    <section id="content" class="content {{ if or site.Params.posts.secnum .Params.secnum }}secnum{{ end }}" aria-labelledby="title" data-bionRead-safe>
+        {{- if or .Params.task site.Params.Post.enableCheckbox }}
+            {{ replace .Content "disabled=" "" | safeHTML }}
+        {{- else }}
+            {{ .Content }}
+        {{- end }}
+    </section>
+    {{- if $isPost }}
+        {{ partial "post/tagged.html" . }}
+    {{- end }}
+</article>
 {{- end }}
 
 {{- define "exclude" }}
